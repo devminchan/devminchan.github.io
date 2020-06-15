@@ -184,41 +184,12 @@ Default region name [ap-northeast-2]: ap-northeast-2
 Default output format [json]: json
 ~~~
 
-그런 다음 콘솔창을 열어서 아래 명령어를 입력하고 결과를 확인해주세요.
-~~~
-$ aws ecr get-login
+그 다음에 생성한 리포지토리로 들어가서 '푸시명령보기' 버튼을 클릭합니다.
+![](/assets/img/2020-05-22_08.png)
+![](/assets/img/2020-05-22_09.png)
 
-docker login -u AWS -p eyJwYXlsb2FkIjoiTUNQaVVweWRiRnBQRUhhaGdYLzhEMUs0TzB0NzZpU2tMQm11OFV3M3FRMHRrR0QrSU5xVU5WZExZR1E2Mk80eG1WYXpqRWxtZDRpSEs5NitsQWpoYU9MK1NDZmpXQSt3MDdRVUJEeHZIR3p6UHdhWmZjQnVEb0VNV2lnLzVsT2ZWcDF6UnhCQ21NREZnYVlUSytaNVRlb2hSQlNudnFUWmtTQnFLOTJhbVhLUTdJZVNBZFpaenNlSWhaOXE1SDFqeGV0Y3pEcFZLUGpZaVhnVVZEKzBZdGtCSHZZUk5qdDBIUU50bU5XaDlGU1dKZ1M1eU9ldVJyaGZhMU5YUHNHaGVXdkxQbUNDcW9pNnhXL3FRNDNPTmpzdElIbVpPQ1hSZ2U2MUVnSFBOWGMzYUdDSVBITDNaWlYwU1VtS1ptU055NWhTQXJqOTFlalJrdFJQTFF5bGNPek1WcUNPVGNIYm9UdVNHSjZkV3BTYytEbjZnTHpJU25pWE5DTlRVVGZTNVVXRXptNmpkUnozOFUrSWJYNzdBZ1hDL3EwbjRXVjh0SGg2RzJwYWhidmJkWldjaXlrOCtjNnptZDRsWXNKbGNQUUxpNVVXeWFxemJUemhEVXlIVzhHZnRqNzk1d084eXd6d25qcVhuK1JnZ0U3TlM2ZThMcUNtRXBiNTBXZUF6bW9FWlFQWmNYNTFGbmlUNHVDWmNERWlKYy9SN2Vsc2N0Mm5ZeXJJN3QwU1pxOVNMbUdNOTlOUEUxMXNYK0ltUWQ1bUJDSmRJS3lFSHJrY3pLZ00wTmhvc21FYjJ5d3l2T0JvYlFtSXVITFUwZS9BdlJIaTI1MDBWS1B1SjBoS08xaTJFRU5KNExUOUpkNzZ5YThBTEIwSm9DYlZCM25rZElzT2laSW1RTHcvWWpLbXZHcVZQaVpMdHpYazBDMnQwbnh5ZjB0Nk10RjFldDB3NCtuQXUzeVp2YkhBQ2Y3SXl3SWRIQ0ovQWwxWjYxakpCVG0vTzZJL080MVlDemQrbXYrUGhTRm9Ea1lnVW1OWkY5aEw1OCtzeThEbTdwS2Q2UkJDRDIvOGxlY2EzNldGNWMraHhYTTlZcW1PWG5rMUJHTEtUNWhZcVNBQTVEQ3lwUEJUWS9BYThUSkRNL0hjQXZWMWE3WW13OTc0UWc0SGRQTGUwUEU4UERoOHAvQk1rZHhTR0Z2TUxYTGluc0Q2RXdpY0NFaEZmeWRtS04vZkRZbDFKNHNRL3owZjQ2RmkyU1ZiSDRqZGhXZnYrZHVPVElTekdzbnk2Y1hxaGcrQjFYYWQrNG9qNzlWeld6K3JGaUo3M2tTNTZBbmV1WVpwWVJlb25kUko0TDczMCtWU1lxMEJURVdyV0F4TXppaDhHckV0cml5YTNhOWFUUFhIQS9vQVpmQVJMbjI5NzBnRFdEWkpnRWtSam9UeXhpWEQxYXNPMWRIMnVjU3IvT0RaaVMycGtqQk1RbE5jZjdnRHVsMEczK3lkVW83THFRVWpicGttUEJDSCsvQ0UvcmttbHNYa2YwTVRVZz09IiwiZGF0YWtleSI6IkFRSUJBSGhBT3NhVzJnWk4wOVdOdE5Ha1ljOHFwMTF4U2haL2RyRUVveTFIazhMWFdnSHlZTHBYNTNEaFY3TlVaWjF5TFFmUUFBQUFmakI4QmdrcWhraUc5dzBCQndhZ2JQnRBZ0VBTUdnR0NTcUdTSWIzRFFFSEFUQWVCZ2xnaGtnQlpRTUVBUzR3RVFRTWdIblVnaXhuTVdMVmNrUEpBZ0VRZ0R2VG4vZFdpZFFHOWZyZmt6cXc0bS9LOThuV0ViaVZObmpjdVRXK2owQ0h3cFdwa1VTcGVYWmc2TTYwdWVmRis0SDRocjJYRnl4bnNncEF1UT09IiwidmVyc2lvbiI6IjIiLCJ0eXBlIjoiREFUQV9LRVkiLCJleHBpcmF0aW9uIjoxNTkwMTk3NTUwfQ== -e none https://129403376983.dkr.ecr.ap-northeast-2.amazonaws.com
-~~~
-출력으로 docker login 명령어가 나오는것을볼 수 있습니다.  
-출력된 docker login 명령어를 복사하고 콘솔창에 붙여넣어 실행해주세요.  
-이 때 __unknown shorthand flag: 'e' in -e
-See 'docker login --help'.__ 오류가 발생하면 `-e none` 부분을 제거하고 다시 실행하면 Login Succeed 문구와 함께 로그인이 성공하는 것을 확인할 수 있습니다.
-
-이제 정말 ECR에 푸시할 일만 남았습니다.
-ECR 페이지로가서 생성한 리포지토리 URI를 복사해주세요.
-![](/assets/img/2020-05-22_05.png)
-
-그다음 `docker tag` 명령어로 태그를 붙여줍니다. my-app 뒤에 나오는 태그이름은 아까 복사한 레포지토리 URI가 되겠죠?
-~~~
-$ docker tag my-app 129403376983.dkr.ecr.ap-northeast-2.amazonaws.com/my-app
-~~~
-감격의 순간입니다. push 합시다.
-~~~
-$ docker push 129403376983.dkr.ecr.ap-northeast-2.amazonaws.com/my-app        
-
-The push refers to repository [129403376983.dkr.ecr.ap-northeast-2.amazonaws.com/my-app]
-2bf94e1b861a: Pushed 
-be6d800dc746: Pushed 
-c0c54de07a8a: Pushed 
-2faeaaebb113: Pushed 
-387bc77dd3f2: Pushed 
-df64d3292fd6: Pushed 
-latest: digest: sha256:89e8498efb4b91e909eb77000b09339721a82a77cc89c3fb8c0df99889e20fa5 size: 1578
-~~~
+각 과정대로 명렁어를 입력하시면 정상적으로 푸시가 완료됩니다.
 
 ECR의 my-app 리포지토리로 들어가서 잘 푸시됬는지 확인해봅시다.
 ![](/assets/img/2020-05-22_06.png)
 잘 된것 같네요 :)
-
-다음 포스팅에서는 ECS에 배포하는 법을 알아보겠습니다!
