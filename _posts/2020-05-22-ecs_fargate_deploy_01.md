@@ -1,5 +1,5 @@
 ---
-title: "ECS Fargate에 Node.js Docker 컨테이너 배포 (1) - ECS 서비스 생성 및 Docker 컨테이너 실행"
+title: "ECS Fargate에 Docker container 배포 (1)"
 excerpt_separator: "<!--more-->"
 categories:
   - develop
