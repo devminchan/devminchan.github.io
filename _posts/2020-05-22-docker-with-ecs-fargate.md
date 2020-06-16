@@ -12,8 +12,6 @@ tags:
 ---
 
 최근 핫한 AWS, Docker를 공부하면서 AWS에 Dockerize한 앱을 배포하는 방법을 정리할 겸 포스팅을 하게되었습니다.
-Node.js로 아주 간단하게 API 서버를 만들고 배포하는 과정을 담았습니다.
-질문/지적 환영합니다.
 
 ---
 읽기 전 사전 준비 사항:
@@ -23,7 +21,7 @@ Node.js로 아주 간단하게 API 서버를 만들고 배포하는 과정을 �
 - Docker Desktop 설치
 - AWS 계정 생성
 
-# 프로젝트 생성
+# 프로젝트 생성 & Docker app 작성
 
 우선 프로젝트를 생성해보겠습니다.
 
@@ -52,14 +50,14 @@ app.get("/hello", (req, res) => {
   });
 });
 
-app.listen(80, () => {
+app.listen(3000, () => {
   console.log("Server starting on port 80");
 });
 
 ~~~
 
 `node index.js` 명령어를 입력하여 실행이 되는지 확인해주세요.
-http://localhost 링크를 통해 확인 가능합니다.  
+http://localhost:3000 링크를 통해 확인 가능합니다.  
 확인이 끝났으면 실행한 프로세스를 종료한 뒤, Dockerfile을 작성합니다.
 
 **Dockerfile**
@@ -121,7 +119,7 @@ Successfully tagged my-app:latest
 
 이제 `docker run` 명령어를 통해 생성한 my-app을 container로 실행해봅시다.
 ~~~
-$ docker run -d -p 80:80 --name my-app-container my-app
+$ docker run -d -p 3000:3000 --name my-app-container my-app
 ~~~
 - -d: demon 프로세스(background)로 실행 
 - -p: 호스트의 포트와 docker container 내부 포트를 연결해줍니다. (<호스트 포트>:<컨테이너 포트>)
@@ -133,13 +131,13 @@ $ docker run -d -p 80:80 --name my-app-container my-app
 ~~~
 $ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
-1d7e38723a58        my-app              "/bin/sh -c 'node in…"   9 minutes ago       Up 9 minutes        0.0.0.0:80->80/tcp   my-app-container
+1d7e38723a58        my-app              "/bin/sh -c 'node in…"   9 minutes ago       Up 9 minutes        0.0.0.0:3000->3000/tcp   my-app-container
 ~~~
 
 ps를 통해 container가 실행중인걸 확인했습니다.  
 그럼 이번엔 정말로 기능이 동작하는지 확인해봅시다.
 
-http://localhost 나 http://localhost/hello 로 접속하여 확인해주세요.
+http://localhost:3000 나 http://localhost:3000/hello 로 접속하여 확인해주세요.
 
 ![](/assets/img/2020-05-22_01.png)
 
@@ -149,7 +147,7 @@ $ docker stop my-app-container
 my-app-container
  ~~~
 
-# Amazon ECR에 생성한 이미지 Push
+# 생성한 Docker Image를 저장하려면? Amazon ECR에 PUSH
 
 ECS에 생성한 docker image를 서비스로 배포하려면 여러 사전 작업들이 필요합니다. ECS에 배포하기전, docker image를 먼저 ECR에 푸시해봅시다.
 
@@ -173,7 +171,7 @@ Amazon ECR 페이지로 들어가서 리포지토리를 생성해주세요.
 이제 리포지토리를 생성했으니, 이 리포지토리에 우리가 만든 이미지를 푸시하면 되겠습니다.
 
 AWS ECR에 푸시할 권한이 필요하므로 docker 로그인을 먼저 해야합니다.
-docker 로그인을 위해서는... ECR 접근 권한을 통해 docker login 정보를 얻어야합니다. 참 깁니다.
+docker 로그인을 위해서는 ECR 접근 권한을 통해 docker login 정보를 얻어야합니다.
 
 `aws configure` 명령어로 로컬에 aws-cli 계정 정보를 설정합니다. 아까 저장한 사용자 계정의 Access Key Id, Secret Access Key를 아래를 참고하여 입력하면 되겠습니다.
 ~~~
@@ -193,3 +191,65 @@ Default output format [json]: json
 ECR의 my-app 리포지토리로 들어가서 잘 푸시됬는지 확인해봅시다.
 ![](/assets/img/2020-05-22_06.png)
 잘 된것 같네요 :)
+
+# VPC & 클러스터 구성하기
+
+#### *(이 부분은 클러스터 생성 시에 한 번에 생성해줄 수 있는 버튼이 있으니, 노가다를 싫어하시면 바로 클러스터 생성 부분으로 넘어가주세요)*
+ECS 컨테이너를 동작시킬 격리된 네트워크 환경을 구성하기 위해 VPC 설정을 해줍니다.
+
+우선 VPC를 생성해주세요
+![](/assets/img/2020-05-22_16.png)
+
+VPC 생성을 완료했다면, VPC 내부의 서브넷 생성을 해야합니다.  
+VPC 하나 당 서브넷 가용 영역이 2개 이상이여야 하니, my-app-subnet-a를 아래와 같이 생성하고, my-app-subnet-b도 생성해야합니다. vpc는 위에서 생성한 my-app-vpc와 연결해주세요.
+![](/assets/img/2020-05-22_17.png)
+my-app-subnet-b의 경우는 가용 영역은 위 그림과 다른 것으로 설정하고, IPV4 CIDR 블록은 10.0.2.0/24 로 설정하면 됩니다.
+
+두 서브넷 모두 생성을 완료하면 다음과 같이 확인할 수 있습니다.
+![](/assets/img/2020-05-22_18.png)
+
+서브넷으로부터 인터넷을 통한 통신을 위해 인터넷 게이트웨이를 생성합니다.
+![](/assets/img/2020-05-22_19.png)
+
+그 다음, 생성된 인터넷 게이트웨이를 my-app-vpc와 연결합니다.
+![](/assets/img/2020-05-22_21.png)
+![](/assets/img/2020-05-22_22.png)
+
+인터넷 게이트웨이를 VPC와 연결하셨다면, 이제 VPC의 라우팅 테이블의 라우트를 해야합니다.
+라우팅 테이블에 인터넷 게이트웨이를 추가하기 전에는, VPC 내부에서만 통신할 수 있도록 local 라우트가 기본적으로 설정되어있음을 확인할 수 있습니다.
+각 서브넷이 인터넷에 연결할 수 있도록 라우팅 테이블을 편집해야합니다.  
+**라우팅 편집** 버튼을 눌러 라우팅 편집 페이지로 이동한 다음, 라우팅을 추가한 뒤 아래와 같이 설정해주세요.
+(local 제외 모든 라우트를 인터넷 게이트웨이와 연결)
+![](/assets/img/2020-05-22_20.png)
+![](/assets/img/2020-05-22_23.png)
+
+VPC 구성을 끝마쳤습니다.  
+이제 클러스터를 생성해봅시다.
+
+![](/assets/img/2020-05-22_15.png)
+![](/assets/img/2020-05-22_24.png)
+
+간단하게 생성가능합니다.
+
+# 컨테이너들을 어떻게 실행할까? Task Definition 생성
+
+ECS는 크게 Task definition, Cluster, Service로 구성되어 있습니다.
+Task definition은 ECR 리포지토리 등으로 푸시한 Docker Image를 컨테이너로 실행할 때, 어떻게 실행할 것인지 정의합니다.
+
+ECS > 작업 정의 페이지에서 **새 작업 정의 생성 버튼**을 클릭해주세요.
+ 
+Fargate는 EC2와 달리 컨테이너를 실행한 시간만큼 지불한다는 특징이 있습니다. EC2 인스턴스의 경우 실행하지 않는 시간에도 인스턴스가 켜져있기 때문에 요금을 지불합니다. 많이 실행될 일 없는 간단한 작업일 경우 Fargate가 효율적입니다.
+
+시작 유형 호환성 선택에서 **Fargate**를 선택하시고 다음 단계를 눌러주세요.
+![](/assets/img/2020-05-22_10.png)
+
+아래와 같이 설정합니다.
+![](/assets/img/2020-05-22_11.png)
+![](/assets/img/2020-05-22_12.png)
+
+컨테이너 정의 부분에서 추가 버튼을 누르면 아래와 같은 창이 뜨는데, 나머지 설정 없이 여기 보이는 부분만 설정하시면 됩니다. 아래 이미지 부분의 이미지 주소는
+![](/assets/img/2020-05-22_14.png)
+
+ECR 리포지토리의 my-app 으로 들어가서 latest 태그 이미지의 url을 복사하시면 됩니다.
+![](/assets/img/2020-05-22_13.png)
+
