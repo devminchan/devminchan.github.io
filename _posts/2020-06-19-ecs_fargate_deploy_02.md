@@ -12,8 +12,7 @@ tags:
 ---
 
 이번 글에서는 저번에 올린 ecs 서비스의 container를
-코드 변경 후 github push 시에 자동으로 Docker Image를 빌드하고 이를 통해 자동으로 새로운 작업 정의(Task definition)을 생성하고
-ecs 서비스에 배포되는 프로세스를 구축해보겠습니다.
+코드 변경 후 github에 push 시 자동으로 Docker Image를 빌드하고, 새로운 작업 정의(Task definition)을 생성 및 ecs에 배포하는 프로세스를 구축해보겠습니다.
 
 # Task definition 파일 생성하기
 
@@ -161,8 +160,14 @@ github action을 통해 자동 배포(CD) 기능을 구축해봅시다.
 
 그 다음 로컬 프로젝트 폴더에서 현재 추가된 파일들 모두 커밋한 다음에,
 저장소로 푸시해줍시다.  
+우선 커밋을 진행해주세요.
 
-(커밋후에 실행해주세요!)
+```sh
+$ git add .
+$ git commit -m "First commit"
+```
+
+커밋이 완료되었으면 푸시를 진행합니다.
 ```sh
 $ git remote add origin https://github.com/devminchan/my-app.git
 $ git push -u origin master
@@ -256,5 +261,66 @@ jobs:
 설정 완료 후 Start commit > Commit new file 버튼을 클릭해서 master 브랜치에 커밋을 등록해주세요.
 ![](/assets/img/2020-06-19/07.png)
 
-그런 다음 Actions 페이지의 workflows 목록을 확인하여 들어가보면, 배포 작업 진행 현황을 확인할 수 있습니다.
+그런 다음 Actions 페이지의 workflows 목록을 확인하여 들어가보면, 배포 작업 진행 현황을 확인할 수 있습니다.  
+정상적으로 성공시에 아래와 같은 화면을 확인할 수 있습니다.
 ![](/assets/img/2020-06-19/09.png)
+
+이제 코드를 변경하여 수정 사항이 자동으로 적용되고 배포되는 모습을 확인해봅시다.
+index.js에 GET 메서드로 /test 경로로 접속시 json을 응답하는 핸들러를 추가했습니다.
+
+**index.js**
+```js
+const app = require("express")();
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Success",
+  });
+});
+
+app.get("/hello", (req, res) => {
+  res.json({
+    message: "hello",
+  });
+});
+
+// 테스트용
+app.get("/test", (req, res) => {
+  res.json({
+    message: "Test",
+  });
+});
+
+app.listen(3000, () => {
+  console.log("Server starting on port 80");
+});
+```
+
+변경 사항을 추가하고 커밋한 뒤, 푸시해주세요.
+```sh
+$ git add .
+
+$ git commit -m "배포 테스트"
+
+$ git push -u origin master
+```
+
+푸시가 완료되면, Actions 탭에서 배포가 잘되는지 한 번 지켜봅시다.
+![](/assets/img/2020-06-19/10.png)
+
+성공하면 아래와 같은 화면을 볼 수 있습니다.
+![](/assets/img/2020-06-19/11.png)
+
+이제 로드밸런서 dns의 test 경로로 접속하여 정말 적용이 됬는지 확인해봅시다.
+aws 콘솔의 EC2 > 로드밸런서 페이지에서 my-app-elb의 dns이름을 복사하고 브라우저든 Postman이든 curl이든 아무거나 써서 /test 경로로 접속하여 추가한 핸들러가 제대로 동작하는지 확인해봅시다.
+
+저는 이번에는 curl로 확인해보겠습니다.
+```sh
+$ curl -X GET my-app-elb-1003967422.ap-northeast-2.elb.amazonaws.com/test 
+
+{"message":"Test"}
+```
+추가한 핸들러의 응답값이 돌아오네요. 성공입니다!
+
+이렇게해서 ECS 서비스에 Fargate로 Docker app을 자동으로 배포하는 과정을 끝마쳤습니다.  
+다음에는 ECS service에 deploy되는 Docker 컨테이너에 DB 정보든 민감한 환경변수를 전달하는 법을 포스팅하겠습니다.
