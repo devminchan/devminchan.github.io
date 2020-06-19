@@ -25,7 +25,7 @@ tags:
 
 우선 프로젝트를 생성해보겠습니다.
 
-~~~
+~~~sh
 $ md my-app
 $ cd my-app
 $ npm init -y
@@ -35,7 +35,7 @@ $ git init
 그리고 `npm install --save express` 명령어로 express 모듈을 설치해줍니다. 설치후에 index.js 파일을 생성하여 간단한 API 서버 프로그램을 작성합니다.
 
 **index.js**
-~~~
+~~~js
 const app = require("express")();
 
 app.get("/", (req, res) => {
@@ -61,7 +61,7 @@ http://localhost:3000 링크를 통해 확인 가능합니다.
 확인이 끝났으면 실행한 프로세스를 종료한 뒤, Dockerfile을 작성합니다.
 
 **Dockerfile**
-~~~
+~~~dockerfile
 FROM node:10.13-alpine # 1
 
 WORKDIR /home/app # 2
@@ -81,7 +81,7 @@ node_modules/
 
 .gitignore, .dockerignore 파일 모두 작성 완료했으면 이제 Dockerfile을 빌드하여 docker image를 생성해봅시다.
 `docker build -t my-app` 명령어로 my-app이라는 이름의 docker image를 생성합니다.
-~~~
+~~~sh
 $ docker build -t my-app .
 
 Sending build context to Docker daemon  83.46kB
@@ -112,13 +112,13 @@ Successfully tagged my-app:latest
 위와 같은 결과가 나오면 성공입니다.
 
 이제 `docker run` 명령어를 통해 생성한 my-app을 container로 실행해봅시다.
-~~~
+~~~sh
 $ docker run -d -p 3000:3000 --name my-app-container my-app
 ~~~
 
 성공적으로 container를 실행시키면, 콘솔에 컨테이너 해시값이 출력될 것입니다.  
 이제 `docker ps` 명령어로 my-app-container 라는 이름의 인스턴스가 존재하는지 확인해주세요.
-~~~
+~~~sh
 $ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                NAMES
 1d7e38723a58        my-app              "/bin/sh -c 'node in…"   9 minutes ago       Up 9 minutes        0.0.0.0:3000->3000/tcp   my-app-container
@@ -129,7 +129,7 @@ http://localhost:3000 나 http://localhost:3000/hello 로 접속하여 확인해
 ![](/assets/2020-05-22/img/2020-05-22_01.png)
 
 실행한 컨테이너는 `docker stop` 명령어로 종료시켜줍니다.
- ~~~
+~~~sh
 $ docker stop my-app-container
 my-app-container
  ~~~
@@ -156,7 +156,7 @@ Amazon ECR 페이지로 들어가서 리포지토리를 생성해주세요.
 이제 리포지토리를 생성했으니, 이 리포지토리에 우리가 만든 이미지를 푸시하면 되겠습니다.
 
 `aws configure` 명령어로 로컬에 aws-cli 계정 정보를 설정합니다. 아까 저장한 사용자 계정의 Access Key Id, Secret Access Key를 아래를 참고하여 입력하면 되겠습니다.
-~~~
+~~~sh
 $ aws configure
 AWS Access Key ID [****************4Y5H]: <저장한 Access Key Id>
 AWS Secret Access Key [****************wxB8]: <저장한 Secret Access Key>
