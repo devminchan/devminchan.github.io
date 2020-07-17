@@ -259,3 +259,8 @@ defaults:
     values:
       layout: single
       author_profile: true
+
+# Sitemap
+url: "https://devminchan.github.io"
+plugins:
+  - jekyll-sitemap
